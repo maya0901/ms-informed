@@ -1,0 +1,18 @@
+{
+  "sertraline": {
+    "cycle_irregularity": 34,
+    "low_libido": 52,
+    "emotional_blunting": 67,
+    "weight_gain": 28
+  },
+  "ibuprofen": {
+    "heavy_periods": 21,
+    "bloating": 15,
+    "stomach_cramps": 19
+  },
+  "fluoxetine": {
+    "cycle_changes": 26,
+    "reduced_libido": 48,
+    "sleep_disturbance": 31
+  }
+}
