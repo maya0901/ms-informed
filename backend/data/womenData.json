@@ -14,5 +14,27 @@
     "cycle_changes": 26,
     "reduced_libido": 48,
     "sleep_disturbance": 31
+  },
+  "ambien": {
+    "next_day_drowsiness": 71,
+    "memory_gaps": 45,
+    "sleep_driving": 12,
+    "mood_changes": 33
+  },
+  "aspirin": {
+    "stomach_irritation": 38,
+    "heavier_periods": 29,
+    "nausea": 22
+  },
+  "levothyroxine": {
+    "hair_loss": 61,
+    "heart_palpitations": 44,
+    "anxiety": 39,
+    "irregular_periods": 27
+  },
+  "metformin": {
+    "nausea": 52,
+    "cycle_disruption": 31,
+    "vitamin_b12_depletion": 24
   }
 }
