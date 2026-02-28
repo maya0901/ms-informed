@@ -1,48 +1,173 @@
-# Women's Drug Side Effects Analyzer
+# Ms-Informed
 
-A full-stack application that surfaces under-discussed drug side effects reported by women by cross-referencing FDA official labeling with community-sourced symptom data.
+Ms-Informed is a full-stack web application that helps women better understand medication side effects that are often underreported, dismissed, or not clearly emphasized in traditional medical documentation.
 
----
-
-## Overview
-
-Official drug documentation is often based on clinical trials that historically underrepresented women. This tool compares FDA-labeled side effects against a curated dataset of symptoms commonly reported by women, highlights gaps, and generates actionable questions patients can bring to their healthcare providers.
+The platform combines official FDA drug label data with real-world, women-reported symptom patterns to surface insights that may not be prominently highlighted in clinical trials. It empowers users to better understand their symptoms and approach healthcare conversations with clarity and confidence.
 
 ---
 
-## Project Structure
+## Project Description
+
+Medication side effects are typically documented through clinical trials that have historically underrepresented women. As a result, some symptoms disproportionately experienced by women may not receive adequate attention in official documentation.
+
+Ms-Informed addresses this gap by:
+
+- Fetching official FDA drug label information via the OpenFDA API
+- Comparing it against a structured dataset of women-reported symptom patterns
+- Detecting potentially under-discussed symptoms
+- Generating doctor-ready discussion prompts
+
+This tool is designed for women seeking clarity around their medication experiences and aiming to have more informed conversations with healthcare providers.
+
+---
+
+## Tech Stack
+
+### Frontend
+
+- **React (Vite)** – Fast development and optimized production builds
+- **Vanilla CSS (custom design system)** – Soft editorial aesthetic with responsive layout
+- **Fetch API** – Communication with backend endpoints
+
+### Backend
+
+- **Node.js**
+- **Express (v5)** – REST API server
+- **Axios** – External API calls
+- **Custom JSON dataset** – Women-reported symptom data
+- **Rule-based analysis engine** – Under-discussed symptom detection
+
+### External APIs
+
+- **OpenFDA Drug Label API**
+
+### Deployment
+
+- **Render** – Single full-stack service deployment
+- Express serves React production build
+
+---
+
+## Features
+
+- **Medication Search** — Search for medications by brand or generic name.
+- **Official FDA Data Integration** — Retrieves adverse reactions from OpenFDA drug labels.
+- **Women-Reported Symptom Visualization** — Displays structured community-reported symptom frequencies.
+- **Under-Discussed Symptom Detection** — Compares official text against women-reported patterns to detect gaps.
+- **Insight Generation Engine** — Generates contextual summaries highlighting patterns.
+- **Doctor Conversation Prompts** — Suggests structured questions users can ask healthcare providers.
+- **Collapsible Official Side Effects** — Keeps focus on community insights while preserving official data access.
+- **Responsive UI** — Clean, editorial design optimized for desktop and mobile.
+
+---
+
+## Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/your-username/ms-informed.git
+cd ms-informed
+```
+
+Install frontend and backend dependencies:
+
+```bash
+cd frontend
+npm install
+
+cd ../backend
+npm install
+```
+
+---
+
+## Run Locally
+
+### Run Backend
+
+```bash
+cd backend
+node server.js
+```
+
+Backend runs on:
 
 ```
-├── data/
-│   └── womenData.json          # Community-reported symptom frequencies by drug
-├── routes/
-│   ├── drug.js                 # GET /api/drug/:name — fetch + parse FDA label data
-│   └── analysis.js             # POST /api/analysis — full comparison + insight generation
-├── services/
-│   └── insights.js             # Rule-based insight and doctor question generator
-├── App.jsx                     # React frontend
-└── server.js                   # Express server entry point
+http://localhost:5000
 ```
+
+### Run Frontend (Development Mode)
+
+```bash
+cd frontend
+npm run dev
+```
+
+Frontend runs on:
+
+```
+http://localhost:5173
+```
+
+> Note: In development, Vite proxy configuration forwards `/api` calls to the backend.
 
 ---
 
-## API Endpoints
+## Production Build
+
+From root directory:
+
+```bash
+npm run build
+npm start
+```
+
+This builds the React app, serves it via Express, and runs the full stack on one port.
+
+---
+
+## Architecture
+
+```mermaid
+graph TD
+A[React Frontend] -->|API Request| B[Express Backend]
+B -->|Fetch| C[OpenFDA API]
+B -->|Load| D[Women Data JSON]
+B -->|Analyze| E[Insight Generator]
+B -->|Return JSON| A
+```
+
+1. The React frontend sends search queries to the Express backend.
+2. The backend fetches official drug data from OpenFDA.
+3. It loads structured women-reported data from a local JSON dataset.
+4. A rule-based engine compares both datasets.
+5. Results are returned and rendered dynamically in the UI.
+
+---
+
+## API Documentation
 
 ### `GET /api/drug/:name`
 
-Fetches official side effects from the OpenFDA API for a given drug and returns community-reported symptoms alongside them.
+Fetches official FDA side effects and women-reported symptom data.
 
-**Example:** `GET /api/drug/sertraline`
+**Example Request**
+
+```
+GET /api/drug/sertraline
+```
+
+**Example Response**
 
 ```json
 {
   "drug": "Sertraline",
-  "official_side_effects": ["nausea", "insomnia", "diarrhea"],
+  "official_side_effects": ["nausea", "insomnia", "dizziness"],
   "women_reported": {
     "cycle_irregularity": 34,
     "low_libido": 52,
-    "emotional_blunting": 67,
-    "weight_gain": 28
+    "emotional_blunting": 67
   }
 }
 ```
@@ -51,27 +176,33 @@ Fetches official side effects from the OpenFDA API for a given drug and returns 
 
 ### `POST /api/analysis`
 
-Performs a full analysis: fetches FDA data, filters community symptoms above a frequency threshold (>20 reports), detects symptoms absent from official documentation, and generates insights.
+Generates under-discussed symptom detection and insights.
 
-**Request body:**
+**Request Body**
+
 ```json
-{ "drug": "sertraline" }
+{
+  "drug": "sertraline"
+}
 ```
 
-**Response:**
+**Example Response**
+
 ```json
 {
   "drug": "sertraline",
-  "official_side_effects": ["..."],
   "community": {
-    "reported": { "low_libido": 52, "emotional_blunting": 67 },
-    "under_discussed": ["low_libido", "emotional_blunting"]
+    "reported": {
+      "cycle_irregularity": 34,
+      "low_libido": 52
+    },
+    "under_discussed": ["cycle_irregularity", "low_libido"]
   },
   "insights": {
-    "summary": "Several community-reported symptoms such as low libido, emotional blunting appear more frequently among women but are not clearly emphasized in official documentation.",
+    "summary": "Community-reported symptoms such as cycle irregularity and low libido appear more frequently among women but are not clearly emphasized in official documentation.",
     "doctor_questions": [
-      "Could low libido be related to my use of sertraline?",
-      "Could emotional blunting be related to my use of sertraline?"
+      "Could cycle irregularity be related to my use of sertraline?",
+      "Could low libido be related to my use of sertraline?"
     ]
   }
 }
@@ -95,52 +226,33 @@ Results are cached in memory to avoid redundant FDA API calls.
 
 ---
 
-## Getting Started
+## Team
 
-### Prerequisites
+- **Meghna V S** — Backend Development, Data Logic, API Integration
+- **Maya Rathish** — Frontend Development & UI/UX Design
 
-- Node.js v16+
-- npm
+---
 
-### Installation
+## License
 
-```bash
-npm install
+This project is licensed under the MIT License.
+
 ```
+MIT License
 
-### Running the Server
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-```bash
-node server.js
-```
-
-The server starts on **http://localhost:5000**.
-
-### Running the Frontend
-
-```bash
-npm start
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 ```
 
 ---
 
-## Dependencies
+## Disclaimer
 
-- **Express** — HTTP server and routing
-- **Axios** — OpenFDA API requests
-- **CORS** — Cross-origin support for the React frontend
-- **React** — Frontend UI
-
----
-
-## Data Notes
-
-`womenData.json` contains symptom frequency counts representing how often each symptom was reported by women in community sources. Only symptoms with a count above **20** are included in analysis to reduce noise. This dataset is intended to be expanded over time.
-
----
-
-## Limitations
-
-- Community data is static and not drawn from a clinical study.
-- FDA label text matching is keyword-based and may produce false negatives for synonymous terms.
-- In-memory caching resets on server restart.
+Ms-Informed is for informational purposes only and does not replace professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider regarding medical concerns.
