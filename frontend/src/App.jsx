@@ -550,12 +550,12 @@ export default function App() {
     setOfficialOpen(false);
 
     try {
-      const drugRes = await fetch(`http://localhost:5000/api/drug/${search.trim()}`);
+      const drugRes = await fetch(`/api/drug/${search.trim()}`);
       if (!drugRes.ok) throw new Error("Drug not found");
       const drugJson = await drugRes.json();
       setDrugData(drugJson);
 
-      const analysisRes = await fetch("http://localhost:5000/api/analysis", {
+      const analysisRes = await fetch("/api/analysis", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
